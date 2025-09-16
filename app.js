@@ -1,89 +1,87 @@
-(() => { // im still trying to understand this wrapper pls dont ask me about it :D :D
-  const elements = {
-    form: document.getElementById('todo-form'),
-    input: document.getElementById('todo-input'),
-    list: document.getElementById('todo-list'),
-    empty: document.getElementById('empty-state'),
-		clearBtn: document.getElementById('clear-completed')
-  };
+(function () { //iife 
+  const { useEffect, useMemo, useState, useCallback } = React; //hooks 
 
-  const haha = { id: 'hustle', text: 'hustle hustle hustle! :D', completed: false }; //add some haha's and hehe's every now and then
-  let todos = [haha]; 
+  function TodoApp() {
+    const initialTodo = useMemo(() => ({ id: 'hustle', text: 'hustle hustle hustle! :D', completed: false }), []);
+    const [todos, setTodos] = useState([initialTodo]);
+    const [inputValue, setInputValue] = useState('');
 
-  function createTodo(text) {
-    const trimmed = text.trim();
-    if (!trimmed) return; 
-    const todo = { 
-      id: Date.now(), 
-      text: trimmed,
-      completed: false
-    };
+    const createTodo = useCallback((text) => {
+      const trimmed = text.trim();
+      if (!trimmed) return;
+      const todo = { id: Date.now(), text: trimmed, completed: false };
+      setTodos((prev) => [todo, ...prev]);
+    }, []);
 
-    todos.unshift(todo); 
-    render();
-  }
+    const toggleTodo = useCallback((id) => {
+      setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t)));
+    }, []);
 
-  // Toggle a todo's completed state
-  function toggleTodo(id) {
-    todos = todos.map(todo =>
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
+    const deleteTodo = useCallback((id) => {
+      setTodos((prev) => prev.filter((t) => t.id !== id));
+    }, []);
+
+    const clearCompleted = useCallback(() => {
+      setTodos((prev) => prev.filter((t) => !t.completed));
+    }, []);
+
+    const handleSubmit = useCallback((e) => {
+      e.preventDefault();
+      createTodo(inputValue);
+      setInputValue('');
+    }, [createTodo, inputValue]);
+
+    return (
+      React.createElement('main', { className: 'app' },
+        React.createElement('h1', { className: 'app__title' }, 'To-do List'),
+        React.createElement('form', { id: 'todo-form', className: 'todo-form', autoComplete: 'off', onSubmit: handleSubmit },
+          React.createElement('input', {
+            id: 'todo-input',
+            className: 'todo-input',
+            type: 'text',
+            placeholder: 'Add a new task...',
+            'aria-label': 'New task',
+            value: inputValue,
+            onChange: (e) => setInputValue(e.target.value)
+          }),
+          React.createElement('button', { className: 'todo-add', type: 'submit', 'aria-label': 'Add task' }, 'Add')
+        ),
+        React.createElement('p', null,
+          React.createElement('button', { id: 'clear-completed', type: 'button', className: 'clear-btn', 'aria-label': 'Clear completed', onClick: clearCompleted }, 'Clear completed')
+        ),
+        React.createElement('ul', { id: 'todo-list', className: 'todo-list', 'aria-live': 'polite' },
+          todos.map((todo) => (
+            React.createElement('li', { key: todo.id, className: 'todo-item' + (todo.completed ? ' completed' : ''), 'data-id': todo.id },
+              React.createElement('input', {
+                type: 'checkbox',
+                className: 'todo-check',
+                checked: todo.completed,
+                onChange: () => toggleTodo(todo.id)
+              }),
+              React.createElement('p', { className: 'todo-text' }, todo.text),
+              React.createElement('button', { className: 'icon-btn', onClick: () => deleteTodo(todo.id) }, 'Delete')
+            )
+          ))
+        ),
+        React.createElement('p', { id: 'empty-state', className: 'empty-state', hidden: todos.length !== 0 }, 'No tasks yet...')
+      )
     );
-    render();
   }
 
-  // Delete a todo
-  function deleteTodo(id) {
-    todos = todos.filter(todo => todo.id !== id);
-    render();
-  }
-
-  //Clear completedd
-  function clearCompleted(){
-    todos = todos.filter(todo => !todo.completed);
-    render();
-}
-  // Render the todo list
-  function render() {
-    elements.list.innerHTML = '';
-    elements.empty.hidden = todos.length !== 0;
-
-    for (const todo of todos) {
-      const li = document.createElement('li');
-      li.className = 'todo-item' + (todo.completed ? ' completed' : '');
-      li.dataset.id = todo.id;
-
-      // Checkbox to toggle completion
-      const checkbox = document.createElement('input');
-      checkbox.type = 'checkbox';
-      checkbox.className = 'todo-check';
-      checkbox.checked = todo.completed;
-      checkbox.addEventListener('change', () => toggleTodo(todo.id));
-
-      // Task text
-      const text = document.createElement('p');
-      text.className = 'todo-text';
-      text.textContent = todo.text;
-
-      // Delete button
-      const del = document.createElement('button');
-      del.className = 'icon-btn';
-      del.textContent = 'Delete';
-      del.addEventListener('click', () => deleteTodo(todo.id));
-
-      li.appendChild(checkbox);
-      li.appendChild(text);
-      li.appendChild(del);
-      elements.list.appendChild(li);
+  function mount() { 
+    const root = document.getElementById('root');
+    if (!root) {
+      const r = document.createElement('div');
+      r.id = 'root';
+      document.body.appendChild(r);
     }
+    ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(TodoApp));
   }
 
-  elements.form.addEventListener('submit', (e) => {
-    e.preventDefault();
-    createTodo(elements.input.value);
-    elements.input.value = '';
-    elements.input.focus();
-  });
-
-	elements.clearBtn.addEventListener('click', clearCompleted); 
-  render();
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', mount);
+  } else {
+    mount();
+  } 
 })();
+
