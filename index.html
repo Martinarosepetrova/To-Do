@@ -5,24 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>To-do List </title>
     <link rel="stylesheet" href="styles.css">
+    <meta name="robots" content="noindex"> // ?
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"> // ?
 </head>
 <body>
-    <main class="app">
-        <h1 class="app__title">To-do List</h1>
-        <form id="todo-form" class="todo-form" autocomplete="off">
-            <input id="todo-input" class="todo-input" type="text" placeholder="Add a new task..." aria-label="New task">
-            <button class="todo-add" type="submit" aria-label="Add task">Add</button>
-        </form>
-        <p>
-        <button id="clear-completed" type="button" class="clear-btn" aria-label="Clear completed">Clear completed</button>
-    </p>
-        <ul id="todo-list" class="todo-list" aria-live="polite"></ul>
-    <p id="empty-state" class="empty-state" hidden>No tasks yet...
+    <div id="root"></div> //visable contects of page
 
-    </p>
-    </main>
-
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script> //react library
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script> //react dom library
+    
     <script src="app.js"></script>
+
 </body>
 </html>
 
