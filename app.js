@@ -1,4 +1,4 @@
-(function () { //iife 
+(function () { 
   const { useEffect, useMemo, useState, useCallback } = React; //hooks 
 
   function TodoApp() {
@@ -31,40 +31,39 @@
       setInputValue('');
     }, [createTodo, inputValue]);
 
-    return (
-      React.createElement('main', { className: 'app' },
-        React.createElement('h1', { className: 'app__title' }, 'To-do List'),
-        React.createElement('form', { id: 'todo-form', className: 'todo-form', autoComplete: 'off', onSubmit: handleSubmit },
-          React.createElement('input', {
-            id: 'todo-input',
-            className: 'todo-input',
-            type: 'text',
-            placeholder: 'Add a new task...',
-            'aria-label': 'New task',
-            value: inputValue,
-            onChange: (e) => setInputValue(e.target.value)
-          }),
-          React.createElement('button', { className: 'todo-add', type: 'submit', 'aria-label': 'Add task' }, 'Add')
-        ),
-        React.createElement('p', null,
-          React.createElement('button', { id: 'clear-completed', type: 'button', className: 'clear-btn', 'aria-label': 'Clear completed', onClick: clearCompleted }, 'Clear completed')
-        ),
-        React.createElement('ul', { id: 'todo-list', className: 'todo-list', 'aria-live': 'polite' },
-          todos.map((todo) => (
-            React.createElement('li', { key: todo.id, className: 'todo-item' + (todo.completed ? ' completed' : ''), 'data-id': todo.id },
-              React.createElement('input', {
-                type: 'checkbox',
-                className: 'todo-check',
-                checked: todo.completed,
-                onChange: () => toggleTodo(todo.id)
-              }),
-              React.createElement('p', { className: 'todo-text' }, todo.text),
-              React.createElement('button', { className: 'icon-btn', onClick: () => deleteTodo(todo.id) }, 'Delete')
-            )
-          ))
-        ),
-        React.createElement('p', { id: 'empty-state', className: 'empty-state', hidden: todos.length !== 0 }, 'No tasks yet...')
-      )
+    return ( <main className="app">
+        <h1 className="app__title">To-do List</h1>
+        <form id="todo-form" className="todo-form" autoComplete="off" onSubmit={handleSubmit}>
+          <input
+            id="todo-input"
+            className="todo-input"
+            type="text"
+            placeholder="Add a new task..."
+            aria-label="New task"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+          />
+          <button className="todo-add" type="submit" aria-label="Add task">Add</button>
+        </form>
+        <p>
+          <button id="clear-completed" type="button" className="clear-btn" aria-label="Clear completed" onClick={clearCompleted}>Clear completed</button>
+        </p>
+        <ul id="todo-list" className="todo-list" aria-live="polite">
+          {todos.map((todo) => (
+            <li key={todo.id} className={"todo-item" + (todo.completed ? " completed" : "")} data-id={todo.id}>
+              <input
+                type="checkbox"
+                className="todo-check"
+                checked={todo.completed}
+                onChange={() => toggleTodo(todo.id)}
+              />
+              <p className="todo-text">{todo.text}</p>
+              <button className="icon-btn" onClick={() => deleteTodo(todo.id)}>Delete</button>
+            </li>
+          ))}
+        </ul>
+        <p id="empty-state" className="empty-state" hidden={todos.length !== 0}>No tasks yet...</p>
+      </main>
     );
   }
 
